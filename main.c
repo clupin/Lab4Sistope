@@ -13,8 +13,9 @@ float **matrixGen(int size);
 float mod(float *zn);
 void mandelbrot(float** M,long size, float a , float b, float m, int depth);
 void generaArchivo(float** M, char* path, int size);
-//implementar una funcion para la generacion de archivos yo creo que sería apropiado
 
+//implementar una funcion para la generacion de archivos yo creo que sería apropiado
+void initMandelbrot(int p, float a,float b,float c,float d,float s);
 /*int main(int argc, char **argv)
 {
     char op;
@@ -35,7 +36,8 @@ int main(int argc, char *argv[]) {
     int opt= 0;
     int correcto=0;
     int help = 0;
-    float p,a,b,c,d,s;
+    int p;
+    float a,b,c,d,s;
     char *f;
     /*entradas;
     • -p: depth, o n´umero m´aximo de iteraciones
@@ -49,7 +51,7 @@ int main(int argc, char *argv[]) {
     while((opt = getopt(argc, argv, "p:a:b:c:d:s:f:")) != -1) {
         switch (opt) {
              case 'p' :
-                    p=atof(optarg);
+                    p=atoi(optarg);
                     correcto++;
                     printf("p was %f\n", p);
                     break;
@@ -91,6 +93,7 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
+        initMandelbrot(p,a,b,c,d,s);
     }
     /*
     if (nombre == NULL ) {
@@ -192,5 +195,15 @@ void generaArchivo(float** M, char* path,int size){
     }
     fclose(archivo);//importante cerrar el archivo
     printf("-- Archivo generado --\n");
+}
+void initMandelbrot(int p, float a,float b,float c,float d,float s){
+    int* t = calcularMatriz(a,b,c,d,s);
+    if(t[0]==t[1]){
+        //la matriz debe ser cuadrada sino todo se pone raro
+    }
+    else{
+        printf("la matriz debe ser cuadrada\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
