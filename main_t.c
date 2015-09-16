@@ -1,4 +1,5 @@
-#include <unistd.h>//importante para que funcione pthread
+#include <unistd.h>
+#include <pthread.h>//importante para que funcione pthread
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
@@ -11,9 +12,9 @@ float *cuad(float *p, float *aux);
 float *sumCR(float *p, float *r, float *aux);
 float **matrixGen(int size);
 float mod(float *zn);
-void mandelbrot((void*)par);
+void* mandelbrot(void* par);
 void generaArchivo(float** M, char* path, int size);
-void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f);
+void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f,int t);
 
 //estructura de datos que contiene los parametros para mandelbrot
 typedef struct p{
@@ -86,7 +87,7 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
-        initMandelbrot(p,a,b,c,d,s,f);
+        initMandelbrot(p,a,b,c,d,s,f,12);
         //int* t = calcularMatriz(a,b,c,d,s);
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
@@ -141,7 +142,7 @@ float **matrixGen(int size){
         M[i]=malloc(sizeof(float)*size);
     return M;
 }
-void mandelbrot((void*)par){
+void* mandelbrot(void* par){
 //
     params* pars = (params*)par;
     float** M = pars->M;
@@ -180,7 +181,7 @@ void mandelbrot((void*)par){
             M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
        }
     }
-    //no retorna nada porque como va trabajando en la direccion de la matriz del parametro no necesita retornar la matriz modificada    
+    return NULL;
 }
 void generaArchivo(float** M, char* path,int size){
     //imprimiendo un archivo de flotantes binarios
@@ -221,7 +222,7 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f,int t
             par->Yi=i*filas_thread;
             par->Yf=(i+1)*filas_thread-1;
                                     //thread     nose  función         parametros
-            int resp = pthread_create(thread[i], NULL,mandelbrot, (void*) par);
+            int resp = pthread_create(&thread[i], NULL,mandelbrot, (void*) par);
         }
         params* par = malloc(sizeof(params));
         par->M = M;
@@ -232,7 +233,7 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f,int t
         par->depth=p;
         par->Yi=(t-1)*filas_thread;
         par->Yf=(t)*filas_thread+(T[0]%t)-1;//para que se incluyan las filas del resto
-        int resp = pthread_create(thread[t-1], NULL,mandelbrot, (void*) par);
+        int resp = pthread_create(&thread[t-1], NULL,mandelbrot, (void*) par);
         for (i = 0; i < t; ++i)
         {
             //se esperan a los thread para la generacion del archivo
