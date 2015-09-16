@@ -15,19 +15,28 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth);
 void generaArchivo(float** M, char* path, int size);
 //implementar una funcion para la generacion de archivos yo creo que sería apropiado
 
+/*int main(int argc, char **argv)
+{
+    char op;
+    while ((op = getopt(argc, argv, "o:")) != EOF) {
+        switch (op) {
+            case 'o':
+                printf("Option: %s\n", optarg);
+                break;
+            default:
+                break;
+        }
+    }
+}*/
+
+
 
 int main(int argc, char *argv[]) {
     int opt= 0;
-    /*
-    0 = false
-    1 = true
-    */
-    int cortar = 0;
-    int juntar = 0;
+    int correcto=0;
     int help = 0;
-    int cantidadArchivos;
-    char *nombre, *numero;
-    //struct para las opciones que existen
+    float p,a,b,c,d,s;
+    char *f;
     /*entradas;
     • -p: depth, o n´umero m´aximo de iteraciones
     • -a: limite inferior del componente real del plano complejo
@@ -37,32 +46,42 @@ int main(int argc, char *argv[]) {
     • -s: m
     • -f: archivo de salida
     */
-    static struct option long_options[] = {
-        {"cut",     required_argument,  0,  'c' },
-        {"join",    no_argument,        0,  'j' },
-        {"name",    required_argument,  0,  'n' },
-        {"help",    no_argument,		0,  'h' },
-        {0,         0,                  0,   0  }
-    };
-
-    int long_index =0;
-    //captura de las posibles respuestas
-    while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
-    //while(1){
+    while((opt = getopt(argc, argv, "p:a:b:c:d:s:f:")) != -1) {
         switch (opt) {
-             case 'c' : 
-                    cortar = 1;
-                    numero = optarg;
-                    cantidadArchivos = atoi(numero);
+             case 'p' :
+                    p=atof(optarg);
+                    correcto++;
+                    printf("p was %f\n", p);
                     break;
-             case 'j' : 
-                    juntar = 1;
+             case 'a' : 
+                    a=atof(optarg);
+                    correcto++;
+                    printf("a was %f\n", a);
                     break;
-             case 'n' :
-                    nombre = optarg;
+             case 'b' :
+                    b=atof(optarg);
+                    correcto++;
+                    printf("b was %f\n", b);
                     break;
-             case 'h' :
-                    help = 1;
+             case 'c' :
+                    c=atof(optarg);
+                    correcto++;
+                    printf("c was %f\n", c);
+                    break;
+             case 'd' :
+                    d=atof(optarg);
+                    correcto++;
+                    printf("d was %f\n", d);
+                    break;
+             case 's' :
+                    s=atof(optarg);
+                    correcto++;
+                    printf("s was %f\n", s);
+                    break;
+             case 'f' :
+                    f=optarg;
+                    correcto++;
+                    printf("f was %s\n", f);
                     break;
              default: 
                     instrucciones(); 
@@ -70,22 +89,26 @@ int main(int argc, char *argv[]) {
                     break;
         }
     }
+    if(correcto==7){
+        printf("estan todos los datos\n");
+    }
+    /*
     if (nombre == NULL ) {
         //instrucciones();
-        //generaArchivo(NULL,"file.raw",size);
-        exit(EXIT_FAILURE);
+        //generaArchivo(NULL,"file.raw");
+        //exit(EXIT_FAILURE);
     }
     if (help == 1){
-    	instrucciones();
+        instrucciones();
         exit(EXIT_FAILURE);
-    }
+    }*/
     return 0;
 }
 
 void instrucciones() {
     printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --cut cantidadPartesQueDeseaCortar\n");
-	printf("O si se desea juntar\n");
-	printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --join\n");
+    printf("O si se desea juntar\n");
+    printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --join\n");
 }
 
 int* calcularMatriz(float a, float b, float c, float d, float m){
@@ -130,10 +153,10 @@ float **matrixGen(int size){
 }
 void mandelbrot(float** M,long size, float a , float b, float m, int depth){
                         //el size podria ser int... no se ha que hacer las consideraciones necesarias
-    int y,x;
+    int y,x,i;
     for (y = 0; y < size; ++y)
     {
-       for (int i = 0; i < size; ++i)
+       for (i = 0; i < size; ++i)
        {
             float z0 = 0;// para efetos del algoritmo creo que este es irrelevante
             int n = 1;// este calcula las iteraciones necesarias para la cosa
