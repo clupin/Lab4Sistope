@@ -16,20 +16,6 @@ void generaArchivo(float** M, char* path, int size);
 
 //implementar una funcion para la generacion de archivos yo creo que sería apropiado
 void initMandelbrot(int p, float a,float b,float c,float d,float s);
-/*int main(int argc, char **argv)
-{
-    char op;
-    while ((op = getopt(argc, argv, "o:")) != EOF) {
-        switch (op) {
-            case 'o':
-                printf("Option: %s\n", optarg);
-                break;
-            default:
-                break;
-        }
-    }
-}*/
-
 
 
 int main(int argc, char *argv[]) {
@@ -94,17 +80,12 @@ int main(int argc, char *argv[]) {
     if(correcto==7){
         printf("estan todos los datos\n");
         initMandelbrot(p,a,b,c,d,s);
+    } else {
+        printf("Faltan datos que entregar\n");
+        printf("Recuerda que la forma correcta es:\n");
+        printf("./mandelbrotp -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw\n");
+        
     }
-    /*
-    if (nombre == NULL ) {
-        //instrucciones();
-        //generaArchivo(NULL,"file.raw");
-        //exit(EXIT_FAILURE);
-    }
-    if (help == 1){
-        instrucciones();
-        exit(EXIT_FAILURE);
-    }*/
     return 0;
 }
 
@@ -196,6 +177,7 @@ void generaArchivo(float** M, char* path,int size){
     fclose(archivo);//importante cerrar el archivo
     printf("-- Archivo generado --\n");
 }
+
 void initMandelbrot(int p, float a,float b,float c,float d,float s){
     int* t = calcularMatriz(a,b,c,d,s);
     if(t[0]==t[1]){
