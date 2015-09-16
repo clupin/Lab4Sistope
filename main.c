@@ -12,7 +12,7 @@ float *sumCR(float *p, float *r);
 float **matrixGen(int size);
 float mod(float *zn);
 void mandelbrot(float** M,long size, float a , float b, float m, int depth);
-void generaArchivo(float** M, char* path);
+void generaArchivo(float** M, char* path, int size);
 //implementar una funcion para la generacion de archivos yo creo que sería apropiado
 
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     }
     if (nombre == NULL ) {
         //instrucciones();
-        generaArchivo(NULL,"file.raw");
+        //generaArchivo(NULL,"file.raw",size);
         exit(EXIT_FAILURE);
     }
     if (help == 1){
@@ -88,11 +88,13 @@ void instrucciones() {
 	printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --join\n");
 }
 
-float* calcularMatriz(float a, float b, float c, float d, float m){
-    float* xy=malloc(2*sizeof(float));
-    xy[1] = (c-a)/m+1;
-    xy[0] = (d-b)/m+1;
-    return xy;
+int* calcularMatriz(float a, float b, float c, float d, float m){
+    int* xy=malloc(2*sizeof(int));
+    float xy_0 = (c-a)/m+1;
+    float xy_1 = (d-b)/m+1;
+    xy[0]=(int) xy_0;
+    xy[1]=(int) xy_1;
+    return  xy;
 }
 
 float* cuad(float *p){
@@ -159,7 +161,7 @@ void generaArchivo(float** M, char* path,int size){
     int y,x;
     for (y = 0; x < size; ++y)
     {
-        for (x = 0; x < count; ++x)
+        for (x = 0; x < size; ++x)
         {
             f=M[x][y];
             fwrite(&f,sizeof(float) , 1, archivo);//funciona
