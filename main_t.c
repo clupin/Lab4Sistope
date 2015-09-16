@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
-        initMandelbrot(p,a,b,c,d,s,f,12);
+        initMandelbrot(p,a,b,c,d,s,f,50);
         //int* t = calcularMatriz(a,b,c,d,s);
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
@@ -132,7 +132,8 @@ float* sumCR(float *p, float *r, float *aux){
 float mod(float *zn){
     float a2 = zn[0]*zn[0];
     float b2 = zn[1]*zn[1];
-    float aux = sqrt(a2+b2);//creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
+    float aux = sqrt(a2+b2);
+    //creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
     return aux;
 }
 float **matrixGen(int size){
@@ -212,17 +213,17 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f,int t
         int filas_thread=T[0]/t;
         for (i = 0; i < t-1; ++i)
         {
-            params* par = malloc(sizeof(params));
-            par->M = M;
-            par->size = T[0];
-            par->a = a;
-            par->b = b;
-            par->m = s;
-            par->depth=p;
-            par->Yi=i*filas_thread;
-            par->Yf=(i+1)*filas_thread-1;
+            params par;
+            par.M = M;
+            par.size = T[0];
+            par.a = a;
+            par.b = b;
+            par.m = s;
+            par.depth=p;
+            par.Yi=i*filas_thread;
+            par.Yf=(i+1)*filas_thread-1;
                                     //thread     nose  función         parametros
-            int resp = pthread_create(&thread[i], NULL,mandelbrot, (void*) par);
+            int resp = pthread_create(&thread[i], NULL,mandelbrot, (void*) &par);
         }
         params* par = malloc(sizeof(params));
         par->M = M;
