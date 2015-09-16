@@ -7,8 +7,8 @@
 void instrucciones();
 //creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
 int *calcularMatriz(float a, float b, float c, float d, float m);
-float *cuad(float *p);
-float *sumCR(float *p, float *r);
+float *cuad(float *p, float *aux);
+float *sumCR(float *p, float *r, float *aux);
 float **matrixGen(int size);
 float mod(float *zn);
 void mandelbrot(float** M,long size, float a , float b, float m, int depth);
@@ -120,8 +120,8 @@ int* calcularMatriz(float a, float b, float c, float d, float m){
     return  xy;
 }
 
-float* cuad(float *p){
-    float* aux=malloc(2*sizeof(float));
+float* cuad(float *p, float *aux){
+    
     float real = p[0];
     float imag = p[1];
     aux[0] = real*real + (-1*imag*imag);
@@ -129,8 +129,8 @@ float* cuad(float *p){
     return aux;
 }
 
-float* sumCR(float *p, float *r){
-    float* aux=malloc(2*sizeof(float));
+float* sumCR(float *p, float *r, float *aux){
+    
     aux[0]=p[0]+r[0];
     aux[1]=p[1]+r[1];
     return aux;
@@ -154,6 +154,9 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
     int y,x,i;
     float* zn = malloc(sizeof(float)*2);
     float* c = malloc(sizeof(float)*2);
+    //se implementan auxiliares usados por las funciones para no reservar memoria innecesaria
+    float* auxCuad = malloc(sizeof(float)*2);
+    float* auxSum = malloc(sizeof(float)*2);
     //aqui hay que reservar la memoria de los auxiliares que ocupan sumCR y cuad
 
     for (y = 0; y < size; y++)
@@ -169,7 +172,7 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
             c[0] = X;
             c[1] = Y;
             while (mod(zn)<2 && n < depth){
-                zn = sumCR(c,cuad(zn));
+                zn = sumCR(c,cuad(zn,auxCuad),auxSum);
                 n++;
             }
             //printf("M[%d][%d]\n",y,x);
@@ -198,6 +201,7 @@ void generaArchivo(float** M, char* path,int size){
 void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
 
     int* t = calcularMatriz(a,b,c,d,s);
+    printf("[%d|%d]\n",t[0],t[1] );
     if(t[0]==t[1]){ 
         float ** M=matrixGen(t[0]);
         mandelbrot(M,t[0],a , b, s, p);
