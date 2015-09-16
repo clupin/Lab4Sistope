@@ -1,13 +1,19 @@
-#include <unistd.h>
+#include <unistd.h>//importante para que funcione pthread
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <math.h>
 
 void instrucciones();
-float *calcularMatriz(float a, float b, float c, float d, float muestreo);
+//creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
+float *calcularMatriz(float a, float b, float c, float d, float m);
 float *cuad(float *p);
 float *sumCR(float *p, float *r);
 float mod(float *zn);
+void mandelbrot(float** M,long size, float a , float b, float m, int depth);
+void generaArchivo(float** M, char* path);
+//implementar una funcion para la generacion de archivos yo creo que sería apropiado
+
 
 int main(int argc, char *argv[]) {
     int opt= 0;
@@ -21,6 +27,15 @@ int main(int argc, char *argv[]) {
     int cantidadArchivos;
     char *nombre, *numero;
     //struct para las opciones que existen
+    /*entradas;
+    • -p: depth, o n´umero m´aximo de iteraciones
+    • -a: limite inferior del componente real del plano complejo
+    • -b: l´ımite inferior componente imaginario
+    • -c: l´ımite superior componente real
+    • -d: l´ımite superior componente imaginario
+    • -s: m
+    • -f: archivo de salida
+    */
     static struct option long_options[] = {
         {"cut",     required_argument,  0,  'c' },
         {"join",    no_argument,        0,  'j' },
@@ -55,32 +70,9 @@ int main(int argc, char *argv[]) {
         }
     }
     if (nombre == NULL ) {
-        instrucciones();
+        //instrucciones();
+        generaArchivo(NULL,"file.raw");
         exit(EXIT_FAILURE);
-    }
-
-    if (cortar == 1) {
-        printf("Se desea cortar el archivo: %s en: %i partes\n", nombre, cantidadArchivos);
-        
-        if(!fork()){
-            char * args[]= {"cut.o",nombre,numero};
-            int result = execve("cut.o", args, NULL);
-            if (result < 0) {
-                perror("error xor ");
-            }
-        }
-        wait();
-    }
-    if (juntar == 1) {
-        printf("Se desea unir el archivo: %s\n", nombre);
-        if(!fork()){
-            char * args[]= {"join.o",nombre};
-            int result = execve("cut.o", args, NULL);
-            if (result < 0) {
-                perror("error JOIN ");
-            }
-        }
-        wait();
     }
     if (help == 1){
     	instrucciones();
@@ -95,24 +87,23 @@ void instrucciones() {
 	printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --join\n");
 }
 
-float *calcularMatriz(float a, float b, float c, float d, float muestreo){
+float* calcularMatriz(float a, float b, float c, float d, float m){
     float* xy=malloc(2*sizeof(float));
-    xy[1] = (c-a)/muestreo+1;
-    xy[0] = (d-b)/muestreo+1;
-
+    xy[1] = (c-a)/m+1;
+    xy[0] = (d-b)/m+1;
     return xy;
 }
 
-float *cuad(float *p){
+float* cuad(float *p){
     float* aux=malloc(2*sizeof(float));
     float real = p[0];
     float imag = p[1];
     aux[0] = real*real + (-1*imag*imag);
-    aux[1] = real*imag + (mag*real);
+    aux[1] = 2*real*imag;
     return aux;
 }
 
-float *sumCR(float *p, float *r){
+float* sumCR(float *p, float *r){
     float* aux=malloc(2*sizeof(float));
     aux[0]=p[0]+r[0];
     aux[1]=p[1]+r[1];
@@ -122,20 +113,47 @@ float *sumCR(float *p, float *r){
 float mod(float *zn){
     float a2 = zn[0]*zn[0];
     float b2 = zn[1]*zn[1];
-    float aux = math.sqrt(a2+b2);
+    float aux = sqrt(a2+b2);//creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
     return aux;
 }
 
-def fun():
-    for y in range(int(t[1])):
-        for x in range(int(t[0])):
-            z0 = 0
-            n = 1
-            X = a+x*muestreo
-            Y = b+y*muestreo
-            zn = [X,Y]
-            c = [X,Y]
-            while mod_(zn)<2 and n < depth:
-                zn = sumCR(c,cuad(zn))
-                n=n+1
-            Matrix[y][x]=math.log(n)
+void mandelbrot(float** M,long size, float a , float b, float m, int depth){
+                        //el size podria ser int... no se ha que hacer las consideraciones necesarias
+    int y,x;
+    for (y = 0; y < size; ++y)
+    {
+       for (int i = 0; i < size; ++i)
+       {
+            float z0 = 0;// para efetos del algoritmo creo que este es irrelevante
+            int n = 1;// este calcula las iteraciones necesarias para la cosa
+            float X = a+x*m;
+            float Y = b+y*m;
+            float* zn = malloc(sizeof(float)*2);
+            zn[0] = X;
+            zn[1] = Y;
+            float* c = malloc(sizeof(float)*2);
+            c[0] = X;
+            c[1] = Y;
+            while (mod(zn)<2 && n < depth){
+                zn = sumCR(c,cuad(zn));
+                n++;
+            }
+            M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
+       }
+    }
+    //no retorna nada porque como va trabajando en la direccion de la matriz del parametro no necesita retornar la matriz modificada    
+}
+void generaArchivo(float** M, char* path){
+    //imprimiendo un archivo de flotantes binarios
+    FILE* archivo = fopen(path, "wb+");
+    float f=1.5;
+    int i;
+    for (i = 0; i < 8; ++i)
+    {
+        fwrite(&f,sizeof(float) , 1, archivo);//funciona
+
+    }
+    fclose(archivo);//importante cerrar el archivo
+    printf("archivo generado... creo...\n");
+}
+
