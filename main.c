@@ -15,7 +15,7 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth);
 void generaArchivo(float** M, char* path, int size);
 
 //implementar una funcion para la generacion de archivos yo creo que sería apropiado
-void initMandelbrot(int p, float a,float b,float c,float d,float s);
+void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f);
 /*int main(int argc, char **argv)
 {
     char op;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
              case 'p' :
                     p=atoi(optarg);
                     correcto++;
-                    printf("p was %f\n", p);
+                    printf("p was %d\n", p);
                     break;
              case 'a' : 
                     a=atof(optarg);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
-        initMandelbrot(p,a,b,c,d,s);
+        initMandelbrot(p,a,b,c,d,s,f);
     }
     /*
     if (nombre == NULL ) {
@@ -196,10 +196,16 @@ void generaArchivo(float** M, char* path,int size){
     fclose(archivo);//importante cerrar el archivo
     printf("-- Archivo generado --\n");
 }
-void initMandelbrot(int p, float a,float b,float c,float d,float s){
+void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
     int* t = calcularMatriz(a,b,c,d,s);
-    if(t[0]==t[1]){
+    if(t[0]==t[1]){ 
         //la matriz debe ser cuadrada sino todo se pone raro
+
+        float ** M=matrixGen(t[0]);
+        mandelbrot(M,t[0],a , b, s, p);
+        generaArchivo(M,f,t[0]);
+
+
     }
     else{
         printf("la matriz debe ser cuadrada\n");
