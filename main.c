@@ -18,21 +18,6 @@ void generaArchivo(float** M, char* path, int size);
 //implementar una funcion para la generacion de archivos yo creo que sería apropiado
 
 void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f);
-/*int main(int argc, char **argv)
-{
-    char op;
-    while ((op = getopt(argc, argv, "o:")) != EOF) {
-        switch (op) {
-            case 'o':
-                printf("Option: %s\n", optarg);
-                break;
-            default:
-                break;
-        }
-    }
-}*/
-
-
 
 int main(int argc, char *argv[]) {
     int opt= 0;
@@ -100,7 +85,7 @@ int main(int argc, char *argv[]) {
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
         printf("Faltan datos que entregar\n");
-        printf("Recuerda que la forma correcta es:\n");
+        printf("Recuerda que la forma correcta es, siguiendo este ejemplo:\n");
         printf("./mandelbrotp -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw\n");
     }
     return 0;
