@@ -155,7 +155,7 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
     float* zn = malloc(sizeof(float)*2);
     float* c = malloc(sizeof(float)*2);
     //aqui hay que reservar la memoria de los auxiliares que ocupan sumCR y cuad
-    
+
     for (y = 0; y < size; y++)
     {
        for (x = 0; x < size; x++)
@@ -189,7 +189,6 @@ void generaArchivo(float** M, char* path,int size){
         {
 
             f=M[x][y];
-            printf("M[x][y]:%f | ",f );
             fwrite(&f,sizeof(float) , 1, archivo);//funciona
         }
     }
