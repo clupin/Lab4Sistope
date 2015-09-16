@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <math.h>
+#include <time.h>
 
 void instrucciones();
 //creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
@@ -199,6 +200,8 @@ void generaArchivo(float** M, char* path,int size){
     printf("-- Archivo generado --\n");
 }
 void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
+    //inicio del reloj
+    clock_t start = clock();
 
     int* t = calcularMatriz(a,b,c,d,s);
     printf("[%d|%d]\n",t[0],t[1] );
@@ -211,5 +214,8 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
         printf("la matriz debe ser cuadrada\n");
         exit(EXIT_FAILURE);
     }
+    //impresion del tiempo
+    printf("Tiempo transcurrido: %f\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+
 }
 
