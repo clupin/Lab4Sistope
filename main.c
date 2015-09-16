@@ -6,9 +6,10 @@
 
 void instrucciones();
 //creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
-float *calcularMatriz(float a, float b, float c, float d, float m);
+int *calcularMatriz(float a, float b, float c, float d, float m);
 float *cuad(float *p);
 float *sumCR(float *p, float *r);
+float **matrixGen(int size);
 float mod(float *zn);
 void mandelbrot(float** M,long size, float a , float b, float m, int depth);
 void generaArchivo(float** M, char* path);
@@ -116,7 +117,15 @@ float mod(float *zn){
     float aux = sqrt(a2+b2);//creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
     return aux;
 }
-
+float **matrixGen(int size){
+    float** M= malloc(sizeof(float*)*size);
+    int i;
+    for (i = 0; i < size; ++i)
+    {
+        M[i]=malloc(sizeof(float)*size);
+    }
+    return M;
+}
 void mandelbrot(float** M,long size, float a , float b, float m, int depth){
                         //el size podria ser int... no se ha que hacer las consideraciones necesarias
     int y,x;
