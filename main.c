@@ -143,17 +143,20 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
     }
     //no retorna nada porque como va trabajando en la direccion de la matriz del parametro no necesita retornar la matriz modificada    
 }
-void generaArchivo(float** M, char* path){
+void generaArchivo(float** M, char* path,int size){
     //imprimiendo un archivo de flotantes binarios
     FILE* archivo = fopen(path, "wb+");
     float f=1.5;
-    int i;
-    for (i = 0; i < 8; ++i)
+    int y,x;
+    for (y = 0; x < size; ++y)
     {
-        fwrite(&f,sizeof(float) , 1, archivo);//funciona
-
+        for (x = 0; x < count; ++x)
+        {
+            f=M[x][y];
+            fwrite(&f,sizeof(float) , 1, archivo);//funciona
+        }
     }
     fclose(archivo);//importante cerrar el archivo
-    printf("archivo generado... creo...\n");
+    printf("-- Archivo generado --\n");
 }
 
