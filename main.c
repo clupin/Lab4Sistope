@@ -95,6 +95,8 @@ int main(int argc, char *argv[]) {
     if(correcto==7){
         printf("estan todos los datos\n");
         initMandelbrot(p,a,b,c,d,s,f);
+        //int* t = calcularMatriz(a,b,c,d,s);
+        //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
         printf("Faltan datos que entregar\n");
         printf("Recuerda que la forma correcta es:\n");
@@ -144,32 +146,33 @@ float **matrixGen(int size){
     float** M= malloc(sizeof(float*)*size);
     int i;
     for (i = 0; i < size; ++i)
-    {
         M[i]=malloc(sizeof(float)*size);
-    }
     return M;
 }
 void mandelbrot(float** M,long size, float a , float b, float m, int depth){
                         //el size podria ser int... no se ha que hacer las consideraciones necesarias
     int y,x,i;
-    for (y = 0; y < size; ++y)
+    float* zn = malloc(sizeof(float)*2);
+    float* c = malloc(sizeof(float)*2);
+    //aqui hay que reservar la memoria de los auxiliares que ocupan sumCR y cuad
+    
+    for (y = 0; y < size; y++)
     {
-       for (i = 0; i < size; ++i)
+       for (x = 0; x < size; x++)
        {
             float z0 = 0;// para efetos del algoritmo creo que este es irrelevante
             int n = 1;// este calcula las iteraciones necesarias para la cosa
             float X = a+x*m;
             float Y = b+y*m;
-            float* zn = malloc(sizeof(float)*2);
             zn[0] = X;
             zn[1] = Y;
-            float* c = malloc(sizeof(float)*2);
             c[0] = X;
             c[1] = Y;
             while (mod(zn)<2 && n < depth){
                 zn = sumCR(c,cuad(zn));
                 n++;
             }
+            //printf("M[%d][%d]\n",y,x);
             M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
        }
     }
@@ -178,13 +181,15 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
 void generaArchivo(float** M, char* path,int size){
     //imprimiendo un archivo de flotantes binarios
     FILE* archivo = fopen(path, "wb+");
-    float f=1.5;
+    float f=0.0;
     int y,x;
-    for (y = 0; x < size; ++y)
+    for (y = 0; y < size; ++y)
     {
         for (x = 0; x < size; ++x)
         {
+
             f=M[x][y];
+            printf("M[x][y]:%f | ",f );
             fwrite(&f,sizeof(float) , 1, archivo);//funciona
         }
     }
@@ -195,13 +200,9 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
 
     int* t = calcularMatriz(a,b,c,d,s);
     if(t[0]==t[1]){ 
-        //la matriz debe ser cuadrada sino todo se pone raro
-
         float ** M=matrixGen(t[0]);
         mandelbrot(M,t[0],a , b, s, p);
         generaArchivo(M,f,t[0]);
-
-
     }
     else{
         printf("la matriz debe ser cuadrada\n");
