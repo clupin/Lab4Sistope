@@ -201,6 +201,9 @@ void initMandelbrot(int p, double a,double b,double c,double d,double s,char* f)
         float * M=matrixGen(t[0]);
         mandelbrot(M,t[0],a , b, s, p);
         generaArchivo(M,f,t[0]);
+        //destroy segment
+        shmdt(M);
+        shmctl(shmid,  IPC_RMID, NULL);
     }
     else{
         printf("la matriz debe ser cuadrada\n");

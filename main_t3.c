@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
                     break;
         }
     }
-    if(correcto==7){
+    if(correcto==8){
         printf("estan todos los datos\n");
         initMandelbrot(p,a,b,c,d,s,f,t);
         //int* t = calcularMatriz(a,b,c,d,s);
@@ -153,7 +153,6 @@ float *matrixGen(int size){
     key = ftok("/dev/null", '1');
     shmid = shmget(key, size*size*sizeof(float), IPC_CREAT | 0666);
     printf("%d_\n", shmid );
-    printf("M");
     void* segment=shmat(shmid, NULL, IPC_CREAT | 0666);
     float* M=(float*) segment;
     return M;
@@ -184,7 +183,7 @@ void* mandelbrot(void* par){
                 zn = sumCR(c,cuad(zn,auxCuad),auxSum);
                 n++;
             }
-            printf("M[%d][%d]\n",y,x);
+            //printf("M[%d][%d]\n",y,x);
             pars->M[y*pars->size+x]=log(n);//este tambien hay que ver como se hace con la libreria math
        }
     }
@@ -248,6 +247,9 @@ void initMandelbrot(int p, double a,double b,double c,double d,double s,char* f,
             pthread_join(thread[i], NULL);
         }
         generaArchivo(M,f,T[0]);
+        //destroy segment
+        shmdt(M);
+        shmctl(shmid,  IPC_RMID, NULL);
     }
     else{
         printf("la matriz debe ser cuadrada\n");

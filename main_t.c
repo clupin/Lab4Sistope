@@ -90,7 +90,8 @@ int main(int argc, char *argv[]) {
                     break;
         }
     }
-    if(correcto==7){
+    printf("correcto %d\n",correcto );
+    if(correcto==8){
         printf("estan todos los datos\n");
 
         initMandelbrot(p,a,b,c,d,s,f,t);
