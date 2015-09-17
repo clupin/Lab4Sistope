@@ -9,6 +9,7 @@
 
 void instrucciones();
 //creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
+<<<<<<< HEAD
 int *calcularMatriz(double a, double b, double c, double d, double m);
 double *cuad(double *p, double *aux);
 double *sumCR(double *p, double *r, double *aux);
@@ -22,6 +23,19 @@ key_t key;
 int shmid;
 
 
+=======
+int *calcularMatriz(float a, float b, float c, float d, float m);
+float *cuad(float *p, float *aux);
+float *sumCR(float *p, float *r, float *aux);
+float **matrixGen(int size);
+float mod(float *zn);
+void mandelbrot(float** M,long size, float a , float b, float m, int depth);
+void generaArchivo(float** M, char* path, int size);
+
+//implementar una funcion para la generacion de archivos yo creo que sería apropiado
+
+void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f);
+>>>>>>> origin/master
 
 int main(int argc, char *argv[]) {
     int opt= 0;
@@ -89,7 +103,7 @@ int main(int argc, char *argv[]) {
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
         printf("Faltan datos que entregar\n");
-        printf("Recuerda que la forma correcta es:\n");
+        printf("Recuerda que la forma correcta es, siguiendo este ejemplo:\n");
         printf("./mandelbrotp -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw\n");
     }
     return 0;

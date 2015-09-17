@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     int opt= 0;
     int correcto=0;
     int help = 0;
-    int p;
+    int p,t;
     float a,b,c,d,s;
     char *f;
     /*entradas;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     • -s: m
     • -f: archivo de salida
     */
-    while((opt = getopt(argc, argv, "p:a:b:c:d:s:f:")) != -1) {
+    while((opt = getopt(argc, argv, "p:a:b:c:d:s:f:t:")) != -1) {
         switch (opt) {
              case 'p' :
                     p=atoi(optarg);
@@ -79,6 +79,11 @@ int main(int argc, char *argv[]) {
                     correcto++;
                     printf("f was %s\n", f);
                     break;
+             case 't' :
+                    t=atoi(optarg);
+                    correcto++;
+                    printf("t was %d\n", t);
+                    break;
              default: 
                     instrucciones(); 
                     exit(EXIT_FAILURE);
@@ -87,13 +92,17 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
+<<<<<<< HEAD
         initMandelbrot(p,a,b,c,d,s,f,100);
+=======
+        initMandelbrot(p,a,b,c,d,s,f,t);
+>>>>>>> origin/master
         //int* t = calcularMatriz(a,b,c,d,s);
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
         printf("Faltan datos que entregar\n");
-        printf("Recuerda que la forma correcta es:\n");
-        printf("./mandelbrotp -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw\n");
+        printf("Recuerda que la forma correcta es, siguiendo este ejemplo:\n");
+        printf("./mandelbrotp -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw -t 12\n");
     }
     return 0;
 }
