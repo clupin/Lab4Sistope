@@ -1,0 +1,33 @@
+README
+
+Compilar:
+Para compilar los archivos, es necesario ejecutar el comando "make" desde la consola, el cual se encarga de crear la carpeta build y compilar los distintos programas y guardarlos en esta dirección.
+
+Ejecutar:
+Al momento de ejectuar el programa, este debe ejecutarse dentro de la carpeta Build que generará el makefile, las variables que deben considerarse son:
+    • -p: depth o número máximo de iteraciones
+    • -a: limite inferior del componente real del plano complejo
+    • -b: límite inferior componente imaginario
+    • -c: límite superior componente real
+    • -d: límite superior componente imaginario
+    • -s: muestreo
+    • -f: archivo de salida
+    • -t: cantidad de hebras
+
+Existen 2 casos para le ejecución:
+
+*Caso 1: mandelbrot.o
+	Para iniciar el programa, solo debe escribirse los caracteres "./" el nombre del programa principal (mandelbrot.o), luego escribir "-C" donde C es la letra de la variable necesaria y luego, se acompaña con el valor correspondiente, ejemplo:
+	"./mandelbrot.o -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw"
+	
+	En caso de escribirse letras (donde corresponden números), se considera como un número 0.
+
+
+*Caso 2: mandelbrotp.o
+	Para iniciar el programa, solo debe escribirse los caracteres "./" el nombre del programa principal (mandelbrotp.o), luego escribir "-C" donde C es la letra de la variable necesaria y luego, se acompaña con el valor correspondiente, ejemplo:
+	"./mandelbrot.o -p 500 -a -1 -b -1 -c 1 -d 1 -s 0.001 -f salida.raw -t 2"
+	
+	En caso de escribirse letras (donde corresponden números), se considera como un número 0.
+
+*Caso 3: Falta de valores
+	En caso de que al ejecutar el programa, faltara alguno de los paramentros, éste avisara y dará el mismo ejemplo que aparece en cada uno de los casos.
