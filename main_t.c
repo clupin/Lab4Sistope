@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     }
     if(correcto==7){
         printf("estan todos los datos\n");
-        initMandelbrot(p,a,b,c,d,s,f,50);
+        initMandelbrot(p,a,b,c,d,s,f,100);
         //int* t = calcularMatriz(a,b,c,d,s);
         //printf("accediendo a t[0]:%d\n",t[0] );
     } else {
@@ -146,14 +146,6 @@ float **matrixGen(int size){
 void* mandelbrot(void* par){
 //
     params* pars = (params*)par;
-    float** M = pars->M;
-    long size = pars->size;
-    float a = pars->a;
-    float b = pars->b;
-    float m = pars->m;
-    int depth = pars->depth;
-    int Yi = pars->Yi;
-    int Yf = pars->Yf;
 
     int y,x,i;
     float* zn = malloc(sizeof(float)*2);
@@ -162,26 +154,27 @@ void* mandelbrot(void* par){
     float* auxCuad = malloc(sizeof(float)*2);
     float* auxSum = malloc(sizeof(float)*2);
 
-    for (y = Yi; y <= Yf; y++)//hay que ver si no hay que ponerle igual
+    for (y = pars->Yi; y <= pars->Yf; y++)//hay que ver si no hay que ponerle igual
     {
-       for (x = 0; x < size; x++)
+       for (x = 0; x < pars->size; x++)
        {
             float z0 = 0;// para efetos del algoritmo creo que este es irrelevante
             int n = 1;// este calcula las iteraciones necesarias para la cosa
-            float X = a+x*m;
-            float Y = b+y*m;
+            float X = pars->a+x*pars->m;
+            float Y = pars->b+y*pars->m;
             zn[0] = X;
             zn[1] = Y;
             c[0] = X;
             c[1] = Y;
-            while (mod(zn)<2 && n < depth){
+            while (mod(zn)<2 && n < pars->depth){
                 zn = sumCR(c,cuad(zn,auxCuad),auxSum);
                 n++;
             }
             //printf("M[%d][%d]\n",y,x);
-            M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
+            pars->M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
        }
     }
+
     return NULL;
 }
 void generaArchivo(float** M, char* path,int size){
@@ -213,17 +206,17 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f,int t
         int filas_thread=T[0]/t;
         for (i = 0; i < t-1; ++i)
         {
-            params par;
-            par.M = M;
-            par.size = T[0];
-            par.a = a;
-            par.b = b;
-            par.m = s;
-            par.depth=p;
-            par.Yi=i*filas_thread;
-            par.Yf=(i+1)*filas_thread-1;
+            params* par = malloc(sizeof(params));
+            par->M = M;
+            par->size = T[0];
+            par->a = a;
+            par->b = b;
+            par->m = s;
+            par->depth=p;
+            par->Yi=i*filas_thread;
+            par->Yf=(i+1)*filas_thread-1;
                                     //thread     nose  función         parametros
-            int resp = pthread_create(&thread[i], NULL,mandelbrot, (void*) &par);
+            int resp = pthread_create(&thread[i], NULL,mandelbrot, (void*) par);
         }
         params* par = malloc(sizeof(params));
         par->M = M;

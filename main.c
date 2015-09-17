@@ -1,5 +1,7 @@
 #include <unistd.h>//importante para que funcione pthread
 #include <stdio.h>
+#include <sys/ipc.h>//shared memory
+#include <sys/shm.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include <math.h>
@@ -7,30 +9,17 @@
 
 void instrucciones();
 //creo que calcula matriz deberia entregar un entero, es el tamaño para crear la matriz
-int *calcularMatriz(float a, float b, float c, float d, float m);
-float *cuad(float *p, float *aux);
-float *sumCR(float *p, float *r, float *aux);
-float **matrixGen(int size);
-float mod(float *zn);
-void mandelbrot(float** M,long size, float a , float b, float m, int depth);
-void generaArchivo(float** M, char* path, int size);
-
-//implementar una funcion para la generacion de archivos yo creo que sería apropiado
-
-void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f);
-/*int main(int argc, char **argv)
-{
-    char op;
-    while ((op = getopt(argc, argv, "o:")) != EOF) {
-        switch (op) {
-            case 'o':
-                printf("Option: %s\n", optarg);
-                break;
-            default:
-                break;
-        }
-    }
-}*/
+int *calcularMatriz(double a, double b, double c, double d, double m);
+double *cuad(double *p, double *aux);
+double *sumCR(double *p, double *r, double *aux);
+float *matrixGen(int size);
+double mod(double *zn);
+void mandelbrot(float* M,long size, double a , double b, double m, int depth);
+void generaArchivo(float* M, char* path, int size);
+void initMandelbrot(int p, double a,double b,double c,double d,double s,char* f);
+//variables globales
+key_t key;
+int shmid;
 
 
 
@@ -39,7 +28,7 @@ int main(int argc, char *argv[]) {
     int correcto=0;
     int help = 0;
     int p;
-    float a,b,c,d,s;
+    double a,b,c,d,s;
     char *f;
     /*entradas;
     • -p: depth, o n´umero m´aximo de iteraciones
@@ -112,62 +101,66 @@ void instrucciones() {
     printf("Para utilizar el programa, es necesario escribir: \n./nombrePrograma.o --name nombreArchivo --join\n");
 }
 
-int* calcularMatriz(float a, float b, float c, float d, float m){
+int* calcularMatriz(double a, double b, double c, double d, double m){
     int* xy=malloc(2*sizeof(int));
-    float xy_0 = (c-a)/m+1;
-    float xy_1 = (d-b)/m+1;
+    double xy_0 = (c-a)/m+1;
+    double xy_1 = (d-b)/m+1;
     xy[0]=(int) xy_0;
     xy[1]=(int) xy_1;
     return  xy;
 }
 
-float* cuad(float *p, float *aux){
+double* cuad(double *p, double *aux){
     
-    float real = p[0];
-    float imag = p[1];
+    double real = p[0];
+    double imag = p[1];
     aux[0] = real*real + (-1*imag*imag);
     aux[1] = 2*real*imag;
     return aux;
 }
 
-float* sumCR(float *p, float *r, float *aux){
+double* sumCR(double *p, double *r, double *aux){
     
     aux[0]=p[0]+r[0];
     aux[1]=p[1]+r[1];
     return aux;
 }
 
-float mod(float *zn){
-    float a2 = zn[0]*zn[0];
-    float b2 = zn[1]*zn[1];
-    float aux = sqrt(a2+b2);//creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
+double mod(double *zn){
+    double a2 = zn[0]*zn[0];
+    double b2 = zn[1]*zn[1];
+    double aux = sqrt(a2+b2);//creo que math hay que importarlo aqui no funciona math.sqrt eso es POO
     return aux;
 }
-float **matrixGen(int size){
-    float** M= malloc(sizeof(float*)*size);
-    int i;
-    for (i = 0; i < size; ++i)
-        M[i]=malloc(sizeof(float)*size);
+float *matrixGen(int size){
+    //conexion a memoria virtual
+    
+    key = ftok("/dev/null", '1');
+    shmid = shmget(key, size*size*sizeof(float), IPC_CREAT | 0666);
+    printf("%d\n", shmid );
+    void* segment=shmat(shmid, NULL, IPC_CREAT | 0666);
+    //double** M= malloc(sizeof(double*)*size);
+    float* M=(float*) segment;
     return M;
 }
-void mandelbrot(float** M,long size, float a , float b, float m, int depth){
+void mandelbrot(float* M,long size, double a , double b, double m, int depth){
                         //el size podria ser int... no se ha que hacer las consideraciones necesarias
     int y,x,i;
-    float* zn = malloc(sizeof(float)*2);
-    float* c = malloc(sizeof(float)*2);
+    double* zn = malloc(sizeof(double)*2);
+    double* c = malloc(sizeof(double)*2);
     //se implementan auxiliares usados por las funciones para no reservar memoria innecesaria
-    float* auxCuad = malloc(sizeof(float)*2);
-    float* auxSum = malloc(sizeof(float)*2);
+    double* auxCuad = malloc(sizeof(double)*2);
+    double* auxSum = malloc(sizeof(double)*2);
     //aqui hay que reservar la memoria de los auxiliares que ocupan sumCR y cuad
 
     for (y = 0; y < size; y++)
     {
        for (x = 0; x < size; x++)
        {
-            float z0 = 0;// para efetos del algoritmo creo que este es irrelevante
+            double z0 = 0;// para efetos del algoritmo creo que este es irrelevante
             int n = 1;// este calcula las iteraciones necesarias para la cosa
-            float X = a+x*m;
-            float Y = b+y*m;
+            double X = a+y*m;
+            double Y = b+x*m;
             zn[0] = X;
             zn[1] = Y;
             c[0] = X;
@@ -177,12 +170,12 @@ void mandelbrot(float** M,long size, float a , float b, float m, int depth){
                 n++;
             }
             //printf("M[%d][%d]\n",y,x);
-            M[y][x]=log(n);//este tambien hay que ver como se hace con la libreria math
+            M[y*size+x]=log(n);//este tambien hay que ver como se hace con la libreria math
        }
     }
     //no retorna nada porque como va trabajando en la direccion de la matriz del parametro no necesita retornar la matriz modificada    
 }
-void generaArchivo(float** M, char* path,int size){
+void generaArchivo(float* M, char* path,int size){
     //imprimiendo un archivo de flotantes binarios
     FILE* archivo = fopen(path, "wb+");
     float f=0.0;
@@ -192,21 +185,21 @@ void generaArchivo(float** M, char* path,int size){
         for (x = 0; x < size; ++x)
         {
 
-            f=M[x][y];
+            f=M[x+y*size];
             fwrite(&f,sizeof(float) , 1, archivo);//funciona
         }
     }
     fclose(archivo);//importante cerrar el archivo
     printf("-- Archivo generado --\n");
 }
-void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
+void initMandelbrot(int p, double a,double b,double c,double d,double s,char* f){
     //inicio del reloj
     clock_t start = clock();
 
     int* t = calcularMatriz(a,b,c,d,s);
     printf("[%d|%d]\n",t[0],t[1] );
     if(t[0]==t[1]){ 
-        float ** M=matrixGen(t[0]);
+        float * M=matrixGen(t[0]);
         mandelbrot(M,t[0],a , b, s, p);
         generaArchivo(M,f,t[0]);
     }
@@ -218,4 +211,3 @@ void initMandelbrot(int p, float a,float b,float c,float d,float s,char* f){
     printf("Tiempo transcurrido: %f\n", ((double)clock() - start) / CLOCKS_PER_SEC);
 
 }
-
